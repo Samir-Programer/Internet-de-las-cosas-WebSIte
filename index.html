@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>IoT Experience – Presentación Holográfica</title>
+    <title>IoT – Internet de Las Cosas</title>
 
     <!-- Fonts: Inter (main text) & Poppins (headers) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Poppins:wght@700;800&display=swap" rel="stylesheet">
@@ -470,28 +470,34 @@
             box-shadow: 0 0 10px #00eaff88;
         }
 
-        /* POPUP (Custom Alert) */
+        /* POPUP (Custom Alert) - MODIFICADO para ser Modal Flotante */
         .popup {
-            margin-top: 30px;
-            padding: 15px;
+            padding: 20px 30px; /* Aumento de padding para mejor visualización */
             background: #00eaff;
             color: #000;
-            width: 300px;
-            margin-left: auto;
-            margin-right: auto;
+            width: 400px; 
+            
+            /* PROPIEDADES CLAVE PARA FLOTAR SOBRE TODO */
+            position: fixed; 
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Centrado perfecto */
+            z-index: 1000; /* Asegura que esté por encima de todos (Navbar es 100) */
+            
             display: none;
             border-radius: 10px;
             font-weight: 700;
             text-align: center;
-            box-shadow: 0 0 15px rgba(0, 234, 255, 0.8);
+            box-shadow: 0 0 30px rgba(0, 234, 255, 0.9); /* Sombra más intensa */
             animation: fadeInOut 3s forwards;
+            line-height: 1.4; 
         }
         
         @keyframes fadeInOut {
-            0% { opacity: 0; transform: scale(0.8); }
-            10% { opacity: 1; transform: scale(1); }
-            90% { opacity: 1; transform: scale(1); }
-            100% { opacity: 0; transform: scale(0.8); }
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            10% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            90% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
         }
 
         /* FOOTER */
@@ -509,7 +515,7 @@
         @media (max-width: 1200px) {
             .team-grid {
                 grid-template-columns: repeat(2, 1fr);
-                max-width: 500px; /* Ajuste para 2 columnas */
+                max-width: 500px; 
             }
         }
         @media (max-width: 992px) {
@@ -522,6 +528,13 @@
             .project-card ul { display: inline-block; text-align: left; }
             .grid-3 { grid-template-columns: repeat(2, 1fr); }
             .form { width: 90%; }
+            .popup { width: 90%; max-width: 400px; } /* Adaptar popup en móvil */
+            @keyframes fadeInOut { /* Ajustar animación para móvil */
+                0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+                10% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                90% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            }
         }
         @media (max-width: 768px) {
             .navbar { padding: 15px 5%; }
@@ -530,7 +543,7 @@
                 display: none;
                 flex-direction: column;
                 width: 100%;
-                position: fixed; /* Use fixed for better mobile menu */
+                position: fixed; 
                 top: 70px; 
                 left: 0;
                 background: rgba(0,0,0,0.95);
@@ -659,7 +672,8 @@
         <!-- CÓDIGO CLAVE: Usamos el wrapper responsive-video-wrapper -->
         <div class="responsive-video-wrapper">
             <video controls>
-                <source src="/video/10 (4).mp4" type="video/mp4">
+                <!-- RUTA RELATIVA CORREGIDA -->
+                <source src="video/10 (4).mp4" type="video/mp4">
             </video>
         </div>
         
@@ -675,7 +689,7 @@
         </p>
 
         <div class="project-card">
-            <!-- Imagen del Prototipo Final -->
+            <!-- RUTA RELATIVA CORREGIDA -->
             <img src="imagenes/final.png" alt="Prototipo Final SmartPlant" />
             <div>
                 <h3>Análisis y Acción Automatizada</h3>
@@ -697,6 +711,7 @@
         <h2 class="section-title">Galería de Prototipos (SmartPlant)</h2>
         <p class="section-text">Documentación visual del desarrollo de SmartPlant, incluyendo diagramas, interfaces y el montaje físico del hardware. </p>
         <div class="gallery-grid">
+            <!-- RUTAS RELATIVAS CORREGIDAS -->
             <img src="imagenes/dfd.png" class="gallery-item" onclick="openLightbox(this.src)" alt="Diagrama de Flujo Lógico">
             <img src="imagenes/UI.png" class="gallery-item" onclick="openLightbox(this.src)" alt="Interfaz de Usuario del Dashboard">
             <img src="imagenes/ESP.png" class="gallery-item" onclick="openLightbox(this.src)" alt="Placa Microcontroladora ESP">
@@ -709,6 +724,7 @@
         <h2 class="section-title">Galería de Inventos IoT Globales</h2>
         <p class="section-text">Explora algunos de los avances más influyentes en el Internet de las Cosas que están redefiniendo la vida moderna y las industrias. </p>
         <div class="gallery-grid">
+            <!-- RUTAS RELATIVAS CORREGIDAS -->
             <img src="imagenes/invento1 (1).png" class="gallery-item" onclick="openLightbox(this.src)" alt="Wearable de salud">
             <img src="imagenes/invento2.png" class="gallery-item" onclick="openLightbox(this.src)" alt="Termostato Inteligente">
             <img src="imagenes/invento3.png" class="gallery-item" onclick="openLightbox(this.src)" alt="Vehículo Autónomo">
@@ -756,8 +772,10 @@
             <button type="submit" class="btn-primary">Enviar Mensaje Seguro</button>
         </form>
 
+        <!-- POPUP: CONTENIDO ACTUALIZADO -->
         <div id="popup" class="popup">
-            <i class="fas fa-check-circle"></i> ¡Mensaje Recibido!
+            <i class="fas fa-check-circle" style="margin-right: 5px;"></i> 
+            Tu mensaje se ha enviado exitosamente.<br> Te responderemos en un lapso de 24 horas.
         </div>
     </section>
 
@@ -946,6 +964,8 @@
 
 
             // --- 6. AUDIO AMBIENTAL (Tone.js) ---
+            // Nota: Se eliminó el botón de toggle de la barra de navegación en el HTML,
+            // pero se mantiene la lógica base de audio por si se desea reintroducir el control.
             function initAudio() {
                 if (Tone.context.state !== 'running') {
                     Tone.start();
@@ -981,35 +1001,30 @@
                 Tone.Transport.loop = true;
                 Tone.Transport.loopEnd = "16m";
             }
-
-            toggleAudioBtn.addEventListener("click", async () => {
-                if (!synth) {
-                    initAudio();
-                }
-                
-                if (audioPlaying) {
-                    Tone.Transport.stop();
-                    synth.releaseAll();
-                    toggleAudioBtn.textContent = "🔊 Música";
-                } else {
-                    await Tone.start();
-                    Tone.Transport.start();
-                    toggleAudioBtn.textContent = "🔇 Silenciar";
-                }
-                audioPlaying = !audioPlaying;
-            });
+            
+            // Si quieres activar el audio al interactuar con la página (por restricción de navegadores)
+            document.querySelector('.btn-primary').addEventListener('click', () => {
+                 if (!synth) {
+                     initAudio();
+                     Tone.Transport.start();
+                     audioPlaying = true;
+                 }
+            }, { once: true }); // Solo se ejecuta una vez
 
 
             // --- 7. FORMULARIO – POPUP ---
             contactForm.addEventListener("submit", (e) => {
                 e.preventDefault();
 
+                // Mostrar el popup
                 popup.style.display = "block";
                 
+                // Ocultar el popup después de 3 segundos
                 setTimeout(() => {
                     popup.style.display = "none";
                 }, 3000); 
 
+                // Resetear el formulario
                 e.target.reset();
             });
 
