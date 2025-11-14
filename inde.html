@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IoT Experience – Presentación Holográfica</title>
+
+    <!-- Fonts: Inter (main text) & Poppins (headers) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Poppins:wght@700;800&display=swap" rel="stylesheet">
+    
+    <!-- Iconos Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Tone.js para Audio -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.52/Tone.js"></script>
+
+    <!-- ESTILOS INTEGRADOS (Contenido de style.css) -->
+    <style>
+        /* RESET & BASE */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            color: #E0FFFF; /* Aqua Blue/Cyan text for futuristic feel */
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* CANVAS */
+        #networkCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: #000000;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            position: fixed;
+            width: 100%;
+            padding: 20px 8%;
+            background: rgba(0,0,0,0.85); 
+            backdrop-filter: blur(15px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 234, 255, 0.1);
+            border-bottom: 1px solid rgba(0, 234, 255, 0.2);
+        }
+
+        .logo {
+            font-family: 'Poppins', sans-serif;
+            font-size: 28px;
+            font-weight: 800;
+            color: #00eaff;
+            letter-spacing: 1px;
+            text-shadow: 0 0 8px #00eaff88;
+        }
+
+        .nav-links a {
+            margin: 0 15px;
+            color: #90FFFF;
+            text-decoration: none;
+            transition: .4s ease-in-out;
+            font-weight: 600;
+            padding: 5px 0;
+            position: relative;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+            text-shadow: 0 0 5px #fff;
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #00eaff;
+            transition: width 0.3s ease-in-out;
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .menu-btn {
+            display: none;
+            cursor: pointer;
+            color: #00eaff;
+        }
+
+        /* HERO */
+        .hero {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            text-align: center;
+        }
+
+        .hero-content {
+            position: relative;
+            padding: 30px 40px;
+            background: rgba(0,0,0,0.7); 
+            border-radius: 20px;
+            backdrop-filter: blur(8px);
+            border: 2px solid rgba(0, 234, 255, 0.3);
+            box-shadow: 0 0 30px rgba(0, 234, 255, 0.4);
+            max-width: 900px;
+        }
+
+        .title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 72px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: #fff;
+            text-shadow: 0 0 15px #00eaff;
+        }
+
+        .typing {
+            font-family: 'Inter', sans-serif;
+            font-size: 30px;
+            margin-bottom: 40px;
+            color: #00eaff;
+            min-height: 40px; 
+            font-weight: 300;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+        }
+
+        .btn-primary, .btn-secondary {
+            padding: 14px 30px;
+            border-radius: 50px; /* Pill shape */
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.4s ease-in-out;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        
+        .btn-primary {
+            background: #00eaff;
+            color: #000;
+            box-shadow: 0 0 15px #00eaff;
+        }
+        
+        .btn-primary:hover {
+            background: #fff;
+            color: #000;
+            box-shadow: 0 0 25px #fff;
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid #00eaff;
+            color: #00eaff;
+        }
+        
+        .btn-secondary:hover {
+            background: #00eaff20;
+            color: #fff;
+            box-shadow: 0 0 15px #00eaff88;
+            transform: scale(1.05);
+        }
+
+        /* SECCIONES BASE */
+        .section {
+            padding: 140px 8%;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(60px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+            min-height: 50vh;
+        }
+        
+        .section.reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #00eaff;
+            text-shadow: 0 0 10px #00eaff55;
+            border-bottom: 2px solid #00eaff33;
+            padding-bottom: 10px;
+            display: inline-block;
+            margin-bottom: 50px;
+        }
+
+        .section-text {
+            max-width: 900px;
+            margin: 0 auto 50px;
+            font-size: 18px;
+            opacity: 0.85;
+            line-height: 1.7;
+        }
+
+        /* CARDS (IoT & Aplicaciones) */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .card {
+            padding: 30px;
+            background: rgba(0, 234, 255, 0.05);
+            border-radius: 15px;
+            border: 1px solid #00eaff33;
+            backdrop-filter: blur(10px);
+            transition: transform 0.4s, box-shadow 0.4s;
+            text-align: left;
+        }
+        
+        .card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 20px rgba(0, 234, 255, 0.3);
+            background: rgba(0, 234, 255, 0.1);
+        }
+        
+        .card h3 {
+            color: #00eaff;
+            margin-bottom: 15px;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        .card i {
+            color: #fff;
+            text-shadow: 0 0 5px #00eaff;
+            font-size: 24px;
+        }
+
+        /* PROYECTO */
+        .project-card {
+            display: flex;
+            gap: 50px;
+            justify-content: center;
+            align-items: center;
+            max-width: 1100px;
+            margin: 40px auto;
+            text-align: left;
+            background: rgba(0, 234, 255, 0.1);
+            padding: 50px;
+            border-radius: 20px;
+            border: 1px solid #00eaff55;
+        }
+
+        .project-card img {
+            width: 400px;
+            min-width: 300px;
+            height: auto;
+            border-radius: 15px;
+            object-fit: cover;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+            border: 5px solid #00eaff;
+        }
+        
+        .project-card h3 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: #fff;
+            text-shadow: 0 0 5px #00eaff;
+        }
+        
+        .project-card ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 20px;
+        }
+        
+        .project-card li {
+            padding-left: 35px;
+            margin-bottom: 12px;
+            font-size: 18px;
+            position: relative;
+            opacity: 0.9;
+        }
+        
+        .project-card li::before {
+            content: "\f058"; /* Check circle solid */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: #00eaff;
+            font-size: 20px;
+        }
+
+        /* GALERÍA */
+        .gallery-grid {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+            gap: 15px;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .gallery-item {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: .3s;
+            object-fit: cover;
+            border: 2px solid #00eaff00;
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #00eaff88;
+            opacity: 1;
+            border: 2px solid #00eaff;
+        }
+
+        /* LIGHTBOX */
+        .lightbox {
+            position: fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background: rgba(0,0,0,0.98);
+            display:none;
+            justify-content:center;
+            align-items:center;
+            z-index: 10000;
+        }
+
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 15px;
+            object-fit: contain;
+            box-shadow: 0 0 50px rgba(0, 234, 255, 0.7);
+        }
+
+        .responsive-video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio (9 / 16 * 100) */
+            height: 0;
+            overflow: hidden;
+            max-width: 900px;
+            margin: auto;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 234, 255, 0.5);
+            border: 2px solid #00eaff;
+        }
+
+        .responsive-video-wrapper video,
+        .responsive-video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 13px; /* Pequeño ajuste para que encaje bien */
+        }
+
+        /* EQUIPO */
+        .team-grid {
+            margin-top: 30px;
+            /* Se modificó a 2 columnas para centrar mejor 2 tarjetas */
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 20px;
+            max-width: 700px; /* Ancho reducido para centrar a dos personas */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .team-card {
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            border: 1px solid #00eaff11;
+            transition: all 0.4s;
+            text-align: center;
+        }
+        
+        .team-card:hover {
+            background: rgba(0, 234, 255, 0.15);
+            box-shadow: 0 0 15px #00eaff55;
+            transform: translateY(-5px);
+        }
+        
+        .team-card h3 {
+            color: #00eaff;
+            margin-bottom: 5px;
+            font-size: 20px;
+        }
+        
+        .team-card p {
+            font-size: 15px;
+            opacity: 0.7;
+        }
+
+        /* FORMULARIO */
+        .form {
+            width: 70%;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 700px;
+        }
+
+        .form input,
+        .form textarea {
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #00eaff55;
+            background: #0d1216; /* Dark background */
+            color: #E0FFFF;
+            font-size: 17px;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        
+        .form textarea {
+            resize: vertical;
+            min-height: 180px;
+        }
+        
+        .form input:focus,
+        .form textarea:focus {
+            outline: none;
+            border-color: #00eaff;
+            box-shadow: 0 0 10px #00eaff88;
+        }
+
+        /* POPUP (Custom Alert) */
+        .popup {
+            margin-top: 30px;
+            padding: 15px;
+            background: #00eaff;
+            color: #000;
+            width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+            display: none;
+            border-radius: 10px;
+            font-weight: 700;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(0, 234, 255, 0.8);
+            animation: fadeInOut 3s forwards;
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: scale(0.8); }
+            10% { opacity: 1; transform: scale(1); }
+            90% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.8); }
+        }
+
+        /* FOOTER */
+        footer {
+            text-align:center;
+            padding:40px 20px;
+            margin-top:50px;
+            background:rgba(0,0,0,0.8);
+            border-top: 1px solid #00eaff33;
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        
+        /* RESPONSIVENESS */
+        @media (max-width: 1200px) {
+            .team-grid {
+                grid-template-columns: repeat(2, 1fr);
+                max-width: 500px; /* Ajuste para 2 columnas */
+            }
+        }
+        @media (max-width: 992px) {
+            .title { font-size: 56px; }
+            .typing { font-size: 24px; }
+            .section-title { font-size: 40px; }
+            .project-card { flex-direction: column; text-align: center; padding: 30px; gap: 30px; }
+            .project-card img { width: 100%; max-width: 400px; }
+            .project-card > div { text-align: center; }
+            .project-card ul { display: inline-block; text-align: left; }
+            .grid-3 { grid-template-columns: repeat(2, 1fr); }
+            .form { width: 90%; }
+        }
+        @media (max-width: 768px) {
+            .navbar { padding: 15px 5%; }
+            .logo { font-size: 24px; }
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                position: fixed; /* Use fixed for better mobile menu */
+                top: 70px; 
+                left: 0;
+                background: rgba(0,0,0,0.95);
+                padding: 20px 0;
+                border-top: 1px solid #00eaff;
+                height: 100vh;
+                overflow-y: auto;
+                z-index: 99;
+            }
+            .nav-links a {
+                margin: 10px 0;
+                padding: 15px 20px;
+                text-align: center;
+                border-bottom: 1px solid #00eaff11;
+            }
+            .menu-btn { display: block; font-size: 28px; }
+            .nav-links.show { display: flex; }
+            .title { font-size: 40px; }
+            .typing { font-size: 18px; }
+            .hero-buttons { flex-direction: column; gap: 15px; }
+            .section { padding: 100px 5%; }
+            .section-title { font-size: 32px; }
+            .grid-3 { grid-template-columns: 1fr; }
+            .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+            .team-grid { grid-template-columns: 1fr; }
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <!-- Canvas Futurista (Red de Nodos) -->
+    <canvas id="networkCanvas"></canvas>
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <div class="logo">IoT </div>
+
+        <nav class="nav-links" id="navLinks">
+            <a href="#inicio">Inicio</a>
+            <a href="#iot">Concepto</a>
+            <a href="#aplicaciones">Aplicaciones</a>
+            <a href="#proyecto">SmartPlant</a>
+            <a href="#video">Video</a>
+            <a href="#galeria_prototipos">Prototipos</a>
+            <a href="#galeria_inventos">Inventos IoT</a>
+            <a href="#equipo">Equipo</a>
+            <a href="#contacto">Contacto</a>
+        </nav>
+
+        <div class="menu-btn" id="menuBtn">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section id="inicio" class="hero">
+        <div class="hero-content">
+            <h1 class="title">Internet de las Cosas</h1>
+            <h2 class="typing" id="typing"></h2>
+            <div class="hero-buttons">
+                <a href="#iot" class="btn-primary">Descubrir Ahora</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ¿QUÉ ES IOT? -->
+    <section id="iot" class="section reveal">
+        <h2 class="section-title">El Ecosistema Conectado</h2>
+        <p class="section-text">
+            El Internet de las Cosas (IoT) no es solo una tecnología, es la próxima revolución de la conectividad. Consiste en una red de dispositivos físicos —desde sensores microscópicos hasta complejos sistemas industriales— que intercambian datos en tiempo real para automatizar, optimizar y tomar decisiones inteligentes sin intervención humana directa. Es la fusión de lo digital y lo físico.
+        </p>
+
+        <div class="grid-3">
+            <div class="card">
+                <h3><i class="fas fa-satellite-dish"></i> Recolección Masiva</h3>
+                <p>Miles de millones de sensores integrados que capturan datos de entorno, movimiento y estado, formando el pulso digital del mundo.</p>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-brain"></i> Inteligencia Distribuida</h3>
+                <p>El procesamiento de la información se realiza en el borde de la red (Edge Computing), permitiendo respuestas ultra-rápidas y autónomas.</p>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-lock"></i> Seguridad y Escalabilidad</h3>
+                <p>Plataformas robustas diseñadas para gestionar un número infinito de conexiones y garantizar la integridad y privacidad de los datos.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- NUEVAS APLICACIONES -->
+    <section id="aplicaciones" class="section reveal" style="background: rgba(0, 234, 255, 0.03);">
+        <h2 class="section-title">Aplicaciones Clave del IoT</h2>
+        <p class="section-text">
+            La versatilidad del IoT transforma industrias enteras. Desde ciudades más eficientes hasta fábricas totalmente automatizadas, estas son las áreas de mayor impacto.
+        </p>
+        
+        <div class="grid-3">
+            <div class="card">
+                <h3><i class="fas fa-city"></i> Smart Cities</h3>
+                <p>Gestión inteligente del tráfico, optimización del consumo energético en alumbrado público y recolección de residuos automática.</p>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-industry"></i> Industria 4.0</h3>
+                <p>Mantenimiento predictivo de maquinaria, monitorización de la cadena de suministro y control de calidad basado en visión artificial.</p>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-heartbeat"></i> E-Health</h3>
+                <p>Dispositivos médicos portátiles (wearables) que monitorean signos vitales de pacientes crónicos y envían alertas a centros médicos.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- VIDEO PRESENTACIÓN -->
+    <section id="video" class="section reveal" style="background: rgba(0, 234, 255, 0.03);">
+        <h2 class="section-title">internet de las cosas video</h2>
+        <p class="section-text">
+            aqui podemos apreciar como el internet de las cosas ha cambiado el mundo significativamente en cada proceso y en cada dimension de nuestras vidas
+            transformando nuestra manera de vivir y de existir en el planeta
+        </p>
+        
+        <!-- CÓDIGO CLAVE: Usamos el wrapper responsive-video-wrapper -->
+        <div class="responsive-video-wrapper">
+            <video controls>
+                <source src="/video/10 (4).mp4" type="video/mp4">
+            </video>
+        </div>
+        
+    </section>
+
+
+    <!-- PROYECTO -->
+    <section id="proyecto" class="section reveal">
+        <h2 class="section-title">SmartPlant IoT: Nuestro Prototipo</h2>
+
+        <p class="section-text">
+            SmartPlant IoT es nuestro sistema de agricultura de precisión a pequeña escala. Empleamos microcontroladores, sensores de alta sensibilidad y una conexión MQTT para asegurar que cualquier planta reciba exactamente lo que necesita, eliminando el riesgo de error humano. 
+        </p>
+
+        <div class="project-card">
+            <!-- Imagen del Prototipo Final -->
+            <img src="/imagenes/final.png" alt="Prototipo Final SmartPlant" />
+            <div>
+                <h3>Análisis y Acción Automatizada</h3>
+                <p>La unidad recopila datos cada 60 segundos y ajusta automáticamente la rutina de cuidado.</p>
+                <ul>
+                    <li>Humedad (Capacitiva):Mide con precisión el agua disponible en el suelo.</li>
+                    <li>Luminosidad (LDR): Ajusta lámparas LED para simular el ciclo de luz óptimo.</li>
+                    <li>Temperatura/Humedad (DHT11): Previene estrés térmico y condiciones propicias para plagas.</li>
+                    <li>Interfáz Móvil: Visualización de métricas históricas y control manual de emergencia.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+    
+
+
+    <!-- GALERÍA DE PROTOTIPOS -->
+    <section id="galeria_prototipos" class="section reveal">
+        <h2 class="section-title">Galería de Prototipos (SmartPlant)</h2>
+        <p class="section-text">Documentación visual del desarrollo de SmartPlant, incluyendo diagramas, interfaces y el montaje físico del hardware. </p>
+        <div class="gallery-grid">
+            <img src="/imagenes/dfd.png" class="gallery-item" onclick="openLightbox(this.src)" alt="Diagrama de Flujo Lógico">
+            <img src="/imagenes/UI.png" class="gallery-item" onclick="openLightbox(this.src)" alt="Interfaz de Usuario del Dashboard">
+            <img src="/imagenes/ESP.png" class="gallery-item" onclick="openLightbox(this.src)" alt="Placa Microcontroladora ESP">
+            <img src="/imagenes/final.png" class="gallery-item" onclick="openLightbox(this.src)" alt="Prototipo Físico Final">
+        </div>
+    </section>
+    
+    <!-- GALERÍA DE INVENTOS IoT GLOBALES (NUEVA SECCIÓN) -->
+    <section id="galeria_inventos" class="section reveal">
+        <h2 class="section-title">Galería de Inventos IoT Globales</h2>
+        <p class="section-text">Explora algunos de los avances más influyentes en el Internet de las Cosas que están redefiniendo la vida moderna y las industrias. </p>
+        <div class="gallery-grid">
+            <img src="/imagenes/invento1 (1).png" class="gallery-item" onclick="openLightbox(this.src)" alt="Wearable de salud">
+            <img src="/imagenes/invento2.png" class="gallery-item" onclick="openLightbox(this.src)" alt="Termostato Inteligente">
+            <img src="/imagenes/invento3.png" class="gallery-item" onclick="openLightbox(this.src)" alt="Vehículo Autónomo">
+            <img src="/imagenes/invento4.png" class="gallery-item" onclick="openLightbox(this.src)" alt="Sensor Industrial 4.0">
+        </div>
+    </section>
+
+    <!-- LIGHTBOX -->
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <img id="lightboxImg" alt="Imagen ampliada de la galería">
+    </div>
+
+    <!-- EQUIPO -->
+    <section id="equipo" class="section reveal" style="background: rgba(0, 234, 255, 0.03);">
+        <h2 class="section-title">Equipo de Innovación</h2>
+
+        <div class="team-grid">
+
+            <div class="team-card">
+                <h3>Samir Smith Jimenez Barrios</h3>
+                <p>Líder UX/UI & Integración. Especialista en Arquitectura Web.</p>
+            </div>
+
+            <div class="team-card">
+                <h3>Juan Sebastián Aristizabal</h3>
+                <p>Multimedia Científica & Documentación. Diseño de Presentaciones.</p>
+            </div>
+            
+            <!-- Los otros miembros fueron eliminados -->
+
+        </div>
+    </section>
+
+    <!-- CONTACTO -->
+    <section id="contacto" class="section reveal">
+        <h2 class="section-title">Conectémonos</h2>
+        <p class="section-text">
+            ¿Tienes preguntas sobre SmartPlant o quieres saber más sobre el futuro del IoT? Envíanos un mensaje y te responderemos a la brevedad.
+        </p>
+
+        <form id="contactForm" class="form">
+            <input type="text" placeholder="Nombre Completo" required>
+            <input type="email" placeholder="Correo Electrónico" required>
+            <textarea placeholder="Tu mensaje o consulta..." required></textarea>
+            <button type="submit" class="btn-primary">Enviar Mensaje Seguro</button>
+        </form>
+
+        <div id="popup" class="popup">
+            <i class="fas fa-check-circle"></i> ¡Mensaje Recibido!
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>© 2025 IoT Experience – Proyecto de Ingeniería & Tecnología. Todos los derechos reservados.</p>
+    </footer>
+
+    <!-- SCRIPT INTEGRADO (Contenido de scrip.js) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.getElementById("navLinks");
+            const menuBtn = document.getElementById("menuBtn");
+            const typingElement = document.getElementById("typing");
+            const toggleAudioBtn = document.getElementById("toggleAudio");
+            const contactForm = document.getElementById("contactForm");
+            const popup = document.getElementById("popup");
+            const networkCanvas = document.getElementById("networkCanvas");
+            const ctx = networkCanvas.getContext("2d");
+            
+            let audioPlaying = false;
+            let synth;
+            let resizeTimeout;
+
+            // --- 1. CANVAS NETWORK ANIMADO ---
+            let particles = [];
+            const DOT_COUNT = 80;
+            const CONNECT_DISTANCE = 120;
+            
+            function initCanvas() {
+                networkCanvas.width = window.innerWidth;
+                networkCanvas.height = window.innerHeight;
+                particles = [];
+                for (let i = 0; i < DOT_COUNT; i++) {
+                    particles.push({
+                        x: Math.random() * networkCanvas.width,
+                        y: Math.random() * networkCanvas.height,
+                        vx: (Math.random() - 0.5) * 0.7,
+                        vy: (Math.random() - 0.5) * 0.7
+                    });
+                }
+            }
+            
+            function drawNetwork() {
+                // Fondo con desvanecimiento sutil para un efecto de "rastro"
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                ctx.fillRect(0, 0, networkCanvas.width, networkCanvas.height);
+            
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    // Manejo de límites
+                    if (p.x < 0 || p.x > networkCanvas.width) p.vx *= -1;
+                    if (p.y < 0 || p.y > networkCanvas.height) p.vy *= -1;
+
+                    // Dibujar punto (nodo)
+                    ctx.fillStyle = "#00eaff"; 
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+
+                // Conectar partículas (aristas)
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        let dx = particles[i].x - particles[j].x;
+                        let dy = particles[i].y - particles[j].y;
+                        let dist = Math.sqrt(dx * dx + dy * dy);
+
+                        if (dist < CONNECT_DISTANCE) {
+                            let opacity = 1 - (dist / CONNECT_DISTANCE);
+                            ctx.strokeStyle = `rgba(0, 234, 255, ${opacity * 0.5})`; // Líneas sutiles
+                            ctx.lineWidth = 1;
+                            ctx.beginPath();
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(drawNetwork);
+            }
+            
+            // Re-inicializar en resize
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(initCanvas, 250);
+            });
+            
+            initCanvas();
+            drawNetwork();
+
+
+            // --- 2. TYPING EFECT (Con borrado y frases mejoradas) ---
+            const typingTexts = [
+                "Conectando el futuro.",
+                "Datos en tiempo real.",
+                "Automatización inteligente.",
+                "El mundo es nuestra red."
+            ];
+            let index = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+
+            function typingEffect() {
+                const currentPhrase = typingTexts[index];
+                
+                if (isDeleting) {
+                    typingElement.textContent = currentPhrase.substring(0, charIndex - 1);
+                    charIndex--;
+                } else {
+                    typingElement.textContent = currentPhrase.substring(0, charIndex + 1);
+                    charIndex++;
+                }
+
+                if (!isDeleting && charIndex === currentPhrase.length) {
+                    setTimeout(() => isDeleting = true, 1500);
+                } else if (isDeleting && charIndex === 0) {
+                    isDeleting = false;
+                    index = (index + 1) % typingTexts.length;
+                    setTimeout(typingEffect, 500);
+                    return;
+                }
+
+                const typingSpeed = isDeleting ? 40 : 80;
+                setTimeout(typingEffect, typingSpeed);
+            }
+            typingEffect();
+
+
+            // --- 3. SCROLL REVEAL (Intersection Observer) ---
+            const sections = document.querySelectorAll(".reveal");
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+
+            // --- 4. MENÚ MÓVIL ---
+            menuBtn.addEventListener("click", () => {
+                navLinks.classList.toggle("show");
+            });
+            
+            // Cerrar menú al hacer clic en un enlace
+            navLinks.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (navLinks.classList.contains('show')) {
+                        navLinks.classList.remove('show');
+                    }
+                });
+            });
+
+
+            // --- 5. LIGHTBOX ---
+            window.openLightbox = (src) => {
+                const lightboxImg = document.getElementById("lightboxImg");
+                const lightbox = document.getElementById("lightbox");
+                lightboxImg.src = src;
+                lightbox.style.display = "flex";
+                document.body.style.overflow = 'hidden'; 
+            };
+
+            window.closeLightbox = () => {
+                document.getElementById("lightbox").style.display = "none";
+                document.body.style.overflow = 'auto';
+            };
+
+            document.addEventListener("keydown", e => {
+                if (e.key === "Escape") window.closeLightbox();
+            });
+
+
+            // --- 6. AUDIO AMBIENTAL (Tone.js) ---
+            function initAudio() {
+                if (Tone.context.state !== 'running') {
+                    Tone.start();
+                }
+
+                // Synth para un sonido de pad futurista
+                synth = new Tone.PolySynth(Tone.Synth, {
+                    oscillator: { type: "sine" },
+                    envelope: {
+                        attack: 4, decay: 1, sustain: 0.5, release: 8
+                    }
+                }).toDestination();
+                
+                // Reverb para ambiente espacial
+                const reverb = new Tone.Reverb(5).toDestination();
+                synth.connect(reverb);
+                
+                // Progresión de acordes Cm9 -> Abmaj7
+                const chord1 = ["C3", "Eb3", "G3", "Bb3", "D4"];
+                const chord2 = ["Ab3", "C4", "Eb4", "G4"];
+                let chordIndex = 0;
+
+                const loop = new Tone.Loop(time => {
+                    if (chordIndex % 2 === 0) {
+                        synth.triggerAttackRelease(chord1, "8m", time);
+                    } else {
+                        synth.triggerAttackRelease(chord2, "8m", time);
+                    }
+                    chordIndex++;
+                }, "8m").start(0);
+
+                Tone.Transport.bpm.value = 40; 
+                Tone.Transport.loop = true;
+                Tone.Transport.loopEnd = "16m";
+            }
+
+            toggleAudioBtn.addEventListener("click", async () => {
+                if (!synth) {
+                    initAudio();
+                }
+                
+                if (audioPlaying) {
+                    Tone.Transport.stop();
+                    synth.releaseAll();
+                    toggleAudioBtn.textContent = "🔊 Música";
+                } else {
+                    await Tone.start();
+                    Tone.Transport.start();
+                    toggleAudioBtn.textContent = "🔇 Silenciar";
+                }
+                audioPlaying = !audioPlaying;
+            });
+
+
+            // --- 7. FORMULARIO – POPUP ---
+            contactForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+
+                popup.style.display = "block";
+                
+                setTimeout(() => {
+                    popup.style.display = "none";
+                }, 3000); 
+
+                e.target.reset();
+            });
+
+            // --- 8. PARALLAX SUAVE ---
+            const heroContent = document.querySelector(".hero-content");
+            window.addEventListener("scroll", () => {
+                let offset = window.pageYOffset;
+                heroContent.style.transform = 
+                    `translateY(${offset * 0.25}px) translateZ(0)`;
+            });
+            
+        });
+    </script>
+</body>
+</html>
